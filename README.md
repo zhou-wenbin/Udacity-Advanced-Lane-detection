@@ -34,6 +34,13 @@ The goals / steps of this project are the following:
 [image14]: ./output_images/warped_binary_of_test5.png
 [image15]: ./output_images/pixels_of_warped_test5.png
 [image16]: ./output_images/fit_polynomial_in_warped_test5.png
+[image17]: ./output_images/histogram_of_warped_test5.png
+[image18]: ./output_images/test_result.png
+
+
+
+
+
 
 
 
@@ -48,7 +55,7 @@ The goals / steps of this project are the following:
 
 #### 1.1. Briefly state how you computed the camera matrix and distortion coefficients. Provide an example of a distortion corrected calibration image.
 
-The code for this step is contained in the IPython notebook located in "./camera calibrating.ipynb"。
+The code for this step is contained in the IPython notebook located in "./camera calibrating.ipynb".
 
 I start by preparing "object points", which will be the (x, y, z) coordinates of the chessboard corners in the world. Here I am assuming the chessboard is fixed on the (x, y) plane at z=0, such that the object points are the same for each calibration image.  Thus, `objp` is just a replicated array of coordinates, and `objpoints` will be appended with a copy of it every time I successfully detect all chessboard corners in a test image.  `imgpoints` will be appended with the (x, y) pixel position of each of the corners in the image plane with each successful chessboard detection.  
 
@@ -69,7 +76,7 @@ Distorted             |  Undistorted
 
 ### 2. Image processing with color transform and gradient thresholds
 
-The code for this step is contained in the IPython notebook located in "TBA"
+The code for this step is contained in the IPython notebook named "Explanation of the image process steps by steps.ipynb"
 
 #### 2.1 Color channel choosing
 
@@ -133,14 +140,48 @@ Original             |  Warped
 
 ### 4.  Find lane-line pixels and fit their positions with a polynomial in the warped image
 
-*  4.1 Let us draw the warped binary image in birdseye view and draw its histogram.
+*  4.1 Let us draw the warped binary image in birdseye view then draw its histogram.
+
+warped_binary             |  histogram  |  
+:-------------------------:|:-------------------------:|
+![alt text][image14]  |  ![alt text][image17] |
 
 
-warped_binary             |  pixels_location  |  fir_polynomial_lines
-:-------------------------:|:-------------------------:|:-------------------------:
-![alt text][image14]  |  ![alt text][image15] |![alt text][image16] 
+From above images, we see that the peak in the histogram represents the place with pixels in the warped binary image. By using histogram of an image, we can find the lane pixels in the image, shown in the following image with 9 square windows on each side of the lane. This following video explains how to find the pixels. 
+[![Click](https://youtu.be/siAMDK8C_x8/0.jpg)](https://youtu.be/siAMDK8C_x8) 
 
-By using histogram of an image, we can find the lane pixels in the image. This video explains how to find the pixels [![Click here to for reference](https://youtu.be/siAMDK8C_x8/0.jpg)](https://youtu.be/siAMDK8C_x8) 
+After find the pixels of the lane, we can then draw polynomial lines on the pixels centers.
+
+pixels_location             |  fit polynomial  |  
+:-------------------------:|:-------------------------:|
+![alt text][image15]  |  ![alt text][image16] |
+
+### 5. Determine the curvature of the lane and vehicle position with respect to center.
+Given the polynomial line, we can compute the radius of curvature of the fit. Be careful that we will use the polynomial as x=f(y), since pixels coordinates in x direction are almost fixed. Given x=f(y), we can compute the radius of curvature easily through a well defined equation: Radius of curvature= [1+(dy/dx)^2]^{3/2}/(|d^2y/dx^2|).
+### 6. Warp the detected lane boundaries back onto the original image.
+
+Use the `cv2.warpPerspective()` funciton we can get unwarped image using inverse perspective matrix, which was calculated in the `warp_image_to_birdseye_view()` function.
+
+### 7. Output visual display of the lane boundaries and numerical estimation of lane curvature and vehicle position.
+
+Finally, we use `cv2.putText()` function to write calculated numbers and words on the image. The following is a testing image.
+
+![alt text][image18]
+
+### 8. Combine everything, we conclude with the followings pipeline.
+
+The code of all combined together is in the IPython notebook named "pipeline.ipynb" and you can also find the code in "functions.py"
+
+*  Calibrate the camera;
+*  Get undistorted image;
+*  Set parameters;
+*  Get shresholded image;
+*  Get birdseye view of warp image;
+*  Draw_lane_lines.
 
 
 
+
+```python
+
+```
