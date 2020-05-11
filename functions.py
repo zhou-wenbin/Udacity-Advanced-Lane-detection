@@ -214,6 +214,19 @@ def draw_lane_lines(warped_binary_image, undistorted_image, Minv):
     return result
 
 
+#the pipeline function
+def process_image(image):
+    undistorted = undistort_image(image, objpoints, imgpoints)
+    
+    combined_binary = get_shresholded_img(undistorted,grad_thresh,s_thresh)
+    
+    binary_warped, Minv = warp_image_to_birdseye_view(combined_binary,corners)
+
+    lane_lines_img = draw_lane_lines(binary_warped, undistorted, Minv)
+    
+    return lane_lines_img
+
+
 
 
 
